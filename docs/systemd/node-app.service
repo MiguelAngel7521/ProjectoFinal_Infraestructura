@@ -1,0 +1,32 @@
+[Unit]
+Description=Node.js App Server
+Documentation=https://github.com/tu-usuario/ProyectoFinal
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=nodeapp
+WorkingDirectory=/opt/app
+Environment=NODE_ENV=production
+Environment=PORT=3001
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutStopSec=5
+SyslogIdentifier=node-app
+
+# Límites de recursos
+LimitNOFILE=65536
+LimitCORE=infinity
+
+# Seguridad
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/app/logs
+
+[Install]
+WantedBy=multi-user.target

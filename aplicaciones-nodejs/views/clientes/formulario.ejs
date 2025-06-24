@@ -1,0 +1,296 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-<%= accion === 'crear' ? 'user-plus' : 'user-edit' %>"></i> 
+                    <%= titulo %>
+                </h4>
+                <a href="/" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i> Volver a la Lista
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="<%= accion === 'crear' ? '/crear' : '/actualizar/' + cliente.id + '?_method=PUT' %>" 
+                      id="formCliente" novalidate>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="fas fa-user"></i> Nombre Completo *
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       value="<%= cliente.nombre || '' %>"
+                                       required
+                                       maxlength="100"
+                                       placeholder="Ingrese el nombre completo">
+                                <div class="invalid-feedback">
+                                    Por favor ingrese un nombre válido.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Correo Electrónico *
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       value="<%= cliente.email || '' %>"
+                                       required
+                                       maxlength="100"
+                                       placeholder="ejemplo@correo.com">
+                                <div class="invalid-feedback">
+                                    Por favor ingrese un email válido.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">
+                                    <i class="fas fa-phone"></i> Teléfono
+                                </label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       value="<%= cliente.telefono || '' %>"
+                                       maxlength="15"
+                                       placeholder="Ej: +591 12345678">
+                                <div class="form-text">
+                                    Formato recomendado: +591 XXXXXXXX
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="activo" class="form-label">
+                                    <i class="fas fa-toggle-on"></i> Estado del Cliente
+                                </label>
+                                <select class="form-select" id="activo" name="activo">
+                                    <option value="1" <%= (cliente.activo === undefined || cliente.activo) ? 'selected' : '' %>>
+                                        <i class="fas fa-check"></i> Activo
+                                    </option>
+                                    <option value="0" <%= cliente.activo === false ? 'selected' : '' %>>
+                                        <i class="fas fa-times"></i> Inactivo
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Dirección
+                        </label>
+                        <textarea class="form-control" 
+                                  id="direccion" 
+                                  name="direccion" 
+                                  rows="3"
+                                  maxlength="255"
+                                  placeholder="Ingrese la dirección completa"><%= cliente.direccion || '' %></textarea>
+                        <div class="form-text">
+                            Incluya calle, número, zona/barrio, ciudad.
+                        </div>
+                    </div>
+                    
+                    <!-- Información adicional si es edición -->
+                    <% if (accion === 'editar' && cliente.id) { %>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-hashtag"></i> ID del Cliente
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       value="<%= cliente.id %>" 
+                                       readonly
+                                       disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i> Fecha de Registro
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       value="<%= cliente.fecha_formateada || 'No disponible' %>" 
+                                       readonly
+                                       disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button type="submit" class="btn btn-custom btn-lg">
+                                <i class="fas fa-<%= accion === 'crear' ? 'plus' : 'save' %>"></i>
+                                <%= accion === 'crear' ? 'Crear Cliente' : 'Actualizar Cliente' %>
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-undo"></i> Limpiar
+                            </button>
+                        </div>
+                        <div>
+                            <a href="/" class="btn btn-outline-dark btn-lg">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Instrucciones de ayuda -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Instrucciones
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success"></i> Campos Obligatorios:</h6>
+                        <ul class="list-unstyled ms-3">
+                            <li><i class="fas fa-user text-primary"></i> Nombre completo</li>
+                            <li><i class="fas fa-envelope text-primary"></i> Correo electrónico</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-lightbulb text-warning"></i> Recomendaciones:</h6>
+                        <ul class="list-unstyled ms-3">
+                            <li><i class="fas fa-phone text-info"></i> Use formato internacional para teléfonos</li>
+                            <li><i class="fas fa-map-marker-alt text-info"></i> Sea específico en la dirección</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación del formulario en tiempo real
+(function() {
+    'use strict';
+    
+    const form = document.getElementById('formCliente');
+    
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+    }, false);
+    
+    // Validación del email en tiempo real
+    const emailInput = document.getElementById('email');
+    const nombreInput = document.getElementById('nombre');
+    
+    emailInput.addEventListener('blur', function() {
+        const email = this.value;
+        if (email && !isValidEmail(email)) {
+            this.setCustomValidity('Por favor ingrese un email válido');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Validación del nombre
+    nombreInput.addEventListener('input', function() {
+        const nombre = this.value.trim();
+        if (nombre.length < 2) {
+            this.setCustomValidity('El nombre debe tener al menos 2 caracteres');
+        } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nombre)) {
+            this.setCustomValidity('El nombre solo puede contener letras y espacios');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Formateo del teléfono
+    const telefonoInput = document.getElementById('telefono');
+    telefonoInput.addEventListener('input', function() {
+        let valor = this.value.replace(/\D/g, ''); // Solo números
+        if (valor.length > 0) {
+            if (valor.startsWith('591')) {
+                valor = '+' + valor;
+            } else if (!valor.startsWith('+')) {
+                valor = '+591' + valor;
+            }
+        }
+        this.value = valor;
+    });
+    
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+})();
+
+// Auto-completado para direcciones (simulado)
+document.getElementById('direccion').addEventListener('input', function() {
+    const direccion = this.value.toLowerCase();
+    
+    // Sugerencias comunes para Sucre
+    const sugerencias = [
+        'Av. Jaime Mendoza',
+        'Calle Estudiantes',  
+        'Plaza 25 de Mayo',
+        'Av. Hernando Siles',
+        'Calle Bolívar'
+    ];
+    
+    // Esta es una implementación básica, en producción usarías una API de mapas
+    if (direccion.length > 3) {
+        const coincidencia = sugerencias.find(s => 
+            s.toLowerCase().includes(direccion)
+        );
+        
+        if (coincidencia && !this.value.includes(coincidencia)) {
+            // Mostrar sugerencia sutil
+            this.setAttribute('placeholder', `Sugerencia: ${coincidencia}`);
+        }
+    }
+});
+
+// Efectos visuales
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada del formulario
+    const card = document.querySelector('.card');
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    
+    setTimeout(function() {
+        card.style.transition = 'all 0.5s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Focus automático en el primer campo
+    document.getElementById('nombre').focus();
+});
+</script>

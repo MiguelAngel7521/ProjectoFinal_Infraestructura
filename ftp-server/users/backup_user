@@ -1,6 +1,0 @@
-# Configuración específica para backup_user
-local_root=/var/ftp/backup_user
-write_enable=YES
-anon_upload_enable=NO
-anon_mkdir_write_enable=NO
-idle_session_timeout=1200

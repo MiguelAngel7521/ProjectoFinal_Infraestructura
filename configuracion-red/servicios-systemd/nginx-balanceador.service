@@ -1,0 +1,31 @@
+[Unit]
+Description=Servidor Proxy NGINX - Balanceador de Carga
+Documentation=http://nginx.org/en/docs/
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=5s
+
+# Configuración de archivos
+ConfigurationDirectory=nginx
+StateDirectory=nginx
+LogsDirectory=nginx
+RuntimeDirectory=nginx
+
+# Seguridad
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/nginx /var/lib/nginx /run/nginx
+
+[Install]
+WantedBy=multi-user.target

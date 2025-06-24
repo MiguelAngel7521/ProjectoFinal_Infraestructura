@@ -1,102 +1,73 @@
-# Manual de Instalación - Proyecto Final
+# Guía de Instalación - Proyecto Final SIS313
+## Universidad San Francisco Xavier de Chuquisaca
 
-## Requisitos del Sistema
+### Infraestructura de Aplicaciones Web
+**Balanceador NGINX + Aplicaciones Node.js + MySQL Maestro-Esclavo + RAID 1**
 
-### Hardware Mínimo
-- CPU: 2 cores
-- RAM: 4 GB
-- Almacenamiento: 20 GB libres
-- Red: Conexión a Internet
+---
 
-### Software Requerido
-- Docker 20.10+
-- Docker Compose 2.0+
-- Git 2.30+
-- Curl (para tests)
+## 📋 Índice
 
-### Sistemas Operativos Soportados
-- Ubuntu 20.04+
-- CentOS 8+
-- Windows 10+ (con WSL2)
-- macOS 11+
+1. [Prerrequisitos](#prerrequisitos)
+2. [Topología de Red](#topología-de-red)
+3. [Instalación por Servidor](#instalación-por-servidor)
+4. [Configuración de Red](#configuración-de-red)
+5. [Verificación del Sistema](#verificación-del-sistema)
+6. [Mantenimiento](#mantenimiento)
+7. [Solución de Problemas](#solución-de-problemas)
 
-## Instalación Paso a Paso
+---
 
-### 1. Preparación del Entorno
+## 🔧 Prerrequisitos
 
-#### Ubuntu/Debian
-```bash
-# Actualizar sistema
-sudo apt update && sudo apt upgrade -y
+### Hardware Requerido
 
-# Instalar Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+| Servidor | CPU | RAM | Disco | Red |
+|----------|-----|-----|-------|-----|
+| **Proxy** | 1 vCPU | 1 GB | 20 GB | 2 NICs |
+| **App1** | 1 vCPU | 2 GB | 20 GB | 2 NICs |
+| **App2** | 1 vCPU | 2 GB | 20 GB | 2 NICs |
+| **BD1** | 2 vCPU | 4 GB | 40 GB | 2 NICs |
+| **BD2** | 2 vCPU | 4 GB | 40 GB + 2x20 GB RAID | 2 NICs |
 
-# Instalar Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+### Software Base
+- **Sistema Operativo:** Ubuntu Server 22.04 LTS
+- **Virtualizador:** VMware Workstation/VirtualBox
+- **Red:** Bridged (192.168.218.x) + NAT para Internet
 
-# Agregar usuario al grupo docker
-sudo usermod -aG docker $USER
-newgrp docker
+---
+
+## 🌐 Topología de Red
+
+### Asignación de IPs
+
+| Servidor | Rol | IP Red Proyecto | IP NAT | Hostname |
+|----------|-----|-----------------|--------|----------|
+| **Proxy** | Balanceador NGINX | 192.168.218.100 | 192.168.13.xxx | proxy.sis313.usfx.bo |
+| **App1** | Servidor Node.js | 192.168.218.101 | 192.168.13.xxx | app1.sis313.usfx.bo |
+| **App2** | Servidor Node.js | 192.168.218.103 | 192.168.13.xxx | app2.sis313.usfx.bo |
+| **BD1** | MySQL Maestro | 192.168.218.102 | 192.168.13.xxx | bd1.sis313.usfx.bo |
+| **BD2** | MySQL Esclavo + RAID | 192.168.218.104 | 192.168.13.xxx | bd2.sis313.usfx.bo |
+
+### Configuración de Red (Netplan)
+
+Para cada servidor, configurar `/etc/netplan/01-netcfg.yaml`:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: true     # NAT (para Internet)
+    ens37:            # Red del proyecto (bridged)
+      dhcp4: false
+      addresses: [192.168.218.XXX/24]  # Cambiar XXX por IP correspondiente
+      nameservers:
+        addresses: [8.8.8.8, 8.8.4.4]
+      routes:
+        - to: 192.168.218.0/24
+          via: 192.168.218.1
 ```
-
-#### CentOS/RHEL
-```bash
-# Instalar Docker
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Instalar Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-```
-
-#### Windows (WSL2)
-```powershell
-# Instalar Docker Desktop para Windows
-# Descargar desde: https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe
-
-# En WSL2, instalar herramientas adicionales
-sudo apt update
-sudo apt install -y curl git make
-```
-
-### 2. Descargar el Proyecto
-
-```bash
-# Clonar repositorio
-git clone https://github.com/tu-usuario/ProyectoFinal.git
-cd ProyectoFinal
-
-# Verificar estructura
-ls -la
-```
-
-### 3. Configuración Inicial
-
-```bash
-# Copiar variables de entorno
-cp app-servers/.env.example app-servers/.env
-cp app-servers/.env.example app-servers/app1/.env
-cp app-servers/.env.example app-servers/app2/.env
-
-# Editar configuraciones según sea necesario
-nano app-servers/.env
-```
-
-### 4. Despliegue Automático
-
-```bash
-# Hacer ejecutables los scripts
-chmod +x scripts/*.sh
-
-# Despliegue completo
-./scripts/deploy.sh --environment development --build
 
 # Verificar despliegue
 ./scripts/monitor.sh --once

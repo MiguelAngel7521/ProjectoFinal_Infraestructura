@@ -1,0 +1,39 @@
+[Unit]
+Description=Aplicación Node.js - Sistema de Clientes
+Documentation=https://github.com/usuario/proyecto-final
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=nodejs
+Group=nodejs
+WorkingDirectory=/opt/aplicacion-nodejs
+ExecStart=/usr/bin/node index.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=aplicacion-nodejs
+
+# Variables de entorno
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=SERVER_NAME=%H
+Environment=DB_HOST=192.168.218.102
+Environment=DB_USER=usuario_bd
+Environment=DB_PASS=clave_bd_segura_123
+Environment=DB_NAME=sistema_clientes
+
+# Límites de recursos
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Seguridad
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/aplicacion-nodejs/logs
+
+[Install]
+WantedBy=multi-user.target

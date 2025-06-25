@@ -4,12 +4,9 @@
 Este proyecto implementa una infraestructura completa con balanceador de carga NGINX, servidores de aplicaciones Node.js y bases de datos MySQL con replicación maestro-esclavo, incluyendo tolerancia a fallos con RAID 1.
 
 ### Integrantes del Grupo
-- [Nombre del estudiante 1]
-- [Nombre del estudiante 2]
-- [Nombre del estudiante 3]
+-Rodriguez Vela Miguel Angel
+-Flores Mosquera Saul
 
-### Docente
-- Ing. [Nombre del docente]
 
 ### Materia
 - SIS313 - Infraestructuras de Sistemas
